@@ -1,0 +1,4 @@
+User log:
+
+
+{'sub': '115418774099745322280', 'name': 'John', 'given_name': 'John', 'picture': 'https://lh3.googleusercontent.com/a/ACg8ocJi3DoCDODueWoBHFDo0L-_j6yC5yr3DCfriC77q7B3=s96-c', 'email': 'johnnguyyy@gmail.com', 'email_verified': True, 'locale': 'en'}
