@@ -5,13 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <title>Welcome to Skycastle</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
     <header>
         <h1>Welcome to Skycastle</h1>
     </header>
     <main>
-        <p>Hello World :)</p>
+        <p id="userName">Hello World :)</p>
+        
+        <div id="g_id_onload"
+            data-client_id="683899391622-2a7tpakgchh1vaaa3at1h5ojejk2fgt8.apps.googleusercontent.com"
+            data-context="signin"
+            data-ux_mode="popup"
+            data-callback="onSignIn"
+            data-auto_prompt="false">
+        </div>
+   
+     <div class="g_id_signin"
+            data-type="standard"
+            data-shape="pill"
+            data-theme="outline"
+            data-text="signin_with"
+            data-size="large"
+            data-logo_alignment="left">
+        </div>
     </main>
+    <p id="userName"></p>
+    <script src="load.js">
+    </script>
 </body>
 </html>
