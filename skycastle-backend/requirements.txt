@@ -1,0 +1,9 @@
+# conda env export --from-history
+werkzeug
+flask
+pyopenssl
+requests
+oauthlib
+flask-login
+flask-cors
+google-auth
