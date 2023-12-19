@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import './App.css';
 import Subscriptions from "./components/Subscriptions.js";
 import Analyst from "./components/Analyst.js";
 import Admin from "./components/Admin.js";
 import Home from "./components/Home";
-import Welcome from "./components/Welcome.js";
+import User from "./components/User.js";
+import Search from "./components/Search.js";
 
 
 const App = () => {
@@ -18,7 +18,8 @@ const App = () => {
               <Route path="/" element={<Home />} />
               <Route path="/Admin" element={<Admin />} />
               <Route path="/Analyst" element={<Analyst />} />
-              <Route path="/Welcome" element={<Welcome />} />
+              <Route path="/User" element={<User />} />
+              <Route path="/Search" element={<Search />} />
               <Route path="/Subscriptions" element={<Subscriptions />} />
             </Routes>
         </div>
