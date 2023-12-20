@@ -1,17 +1,23 @@
 import React, { useState, useEffect, useRef } from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, useNavigate } from "react-router-dom";
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
-import { useNavigate } from 'react-router-dom';
 import Button from './Button';
 import './App.css';
+import { withRouter } from 'react-router-dom';
+import { jwtDecode } from "jwt-decode";
+import axios from 'axios';
 
 
-const Home = ({ sendData }) => {
+const Home = ({ history, sendData}) => {
     const navigate = useNavigate();
     const [role, set_role] = useState([]);
 
-    const [isUser, setIsUser] = useState(false);
+    const [isUser, setIsUser] = useState(true);
     const [isAnalyst, setIsAnalyst] = useState(false);
+
+    const showAlert = () => {
+      alert('User not found. Please register as a new User or Analyst!');
+    };
   
     const handleUserChange = () => {
       setIsUser(!isUser);
@@ -31,59 +37,105 @@ const Home = ({ sendData }) => {
 
     const responseGoogleLogin = async (credentialResponse) => {
         console.log('Google Sign-In Success:', credentialResponse);
-  
+        const decoded = jwtDecode(credentialResponse.credential);
+
         try {
-          const response = await fetch('http://127.0.0.1:5000/google-sso-callback', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(credentialResponse['credential']),
+          const response = await axios.get('http://ec2-3-144-38-237.us-east-2.compute.amazonaws.com:8012/user', {
+              method: 'GET',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
           });
-      
-          const data = await response.json();
-  
-          if (response.ok) {
-            set_role(data['role'])
-            console.log('DATA: ', data);
-            sendData(data)
+          console.log(response)
+          const result = response.data
 
-          }
+          if (result) {
+            const userWithMatchingEmail = result.find(user => user.email === decoded.email);
+            const role = userWithMatchingEmail ? userWithMatchingEmail.role : null;
+            const user_id = userWithMatchingEmail ? userWithMatchingEmail.user_id : null;
+            console.log("role: ", role)
+
+            if (role === "CLIENT")
+              navigate('/User', {
+                state: {
+                  email: decoded.email,
+                  name: decoded.name,
+                  role: role,
+                  user_id: user_id
+                }
+            })
+            
+            else if (role === "ANALYST")
+              navigate('/Analyst', {
+                state: {
+                  email: decoded.email,
+                  name: decoded.name,  // Include additional props
+                  role: role,
+                  user_id: user_id
+                }
+              })
+            }
+
+            else {
+              showAlert();
+            }
+
         } catch (error) {
-          console.error('Error:', error);
+            console.error('Error getting role:', error);
         }
-
-        if (role == "subscriber")
-          navigate('/Subscriptions')
-        if (role == "analyst")
-          navigate('/Analyst')
-        if (role == "admin")
-          navigate('/Subscriptions')
     };
 
+
     const responseGoogleSignUp = async (credentialResponse) => {
-      console.log('Google Sign-In Success:', credentialResponse);
+      console.log('Google Register Success:', credentialResponse);
+      const decoded = jwtDecode(credentialResponse.credential);
+      const sign_up_role = "CLIENT"
 
-      try {
-        const response = await fetch('http://127.0.0.1:5000/google-sso-callback', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(credentialResponse['credential']),
-        });
-    
-        const data = await response.json();
-
-        if (response.ok) {
-          console.log('DATA: ', data);
-          sendData(data)
-        }
-      } catch (error) {
-        console.error('Error:', error);
+      if (isAnalyst){
+        sign_up_role = "ANALYST"
       }
 
-      navigate('/Welcome')
+      console.log(sign_up_role)
+
+      try {
+        const response = await axios.post('http://ec2-3-144-38-237.us-east-2.compute.amazonaws.com:8012/user', {
+              "email": decoded.email,
+              "role": sign_up_role
+        });
+        console.log(response)
+        const result = response.data
+
+        if (result) {
+          const user_id = result.user_id
+
+          if (sign_up_role === "CLIENT")
+            navigate('/User', {
+              state: {
+                email: decoded.email,
+                name: decoded.name,
+                role: sign_up_role,
+                user_id: user_id
+              }
+          })
+          
+          else if (sign_up_role === "ANALYST")
+            navigate('/Analyst', {
+              state: {
+                email: decoded.email,
+                name: decoded.name,  // Include additional props
+                role: sign_up_role,
+                user_id: user_id
+              }
+            })
+          }
+
+          else {
+            showAlert();
+          }
+
+      } catch (error) {
+          console.error('Error getting role:', error);
+      }
   };
 
     return (
@@ -100,11 +152,11 @@ const Home = ({ sendData }) => {
                 console.log('Login Failed');
                 }}
             />
-            <h2> Or sign up as an user or analyst! </h2>
+            <h2> New? Sign up as a client or analyst below... </h2>
             <h3>
               <label>
                 <input type="checkbox" checked={isUser} onChange={handleUserChange} />
-                  Register as User
+                  Register as Client
               </label>
               <br />
               <label>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { createContext, useContext, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './App.css';
 import Home from './Home';
 import Button from './Button';
@@ -33,9 +34,14 @@ const SubscriptionTable = ({ data }) => {
 };
 
 
-const Analyst = () => {
-  const [name, setName] = useState("John Doe");
-  const [role, setRole] = useState("Subscriber");
+const Analyst = (props) => {
+
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.state);
+  let email = queryParams.get('email');
+  let name = queryParams.get('name');
+  let role = queryParams.get('role');
+  console.log(queryParams)
 
   const handleSubmit = async () => {
       console.log("Submit Success!")
@@ -46,8 +52,9 @@ const Analyst = () => {
     <div className="App">
       <header className="Page-header">
         <h1>Analyst Profile:</h1>
-        <h2>Name: </h2>
-        <h2>Role: </h2>
+        <h2>Name: {name}</h2>
+        <h2>Email: {email}</h2>
+        <h2>Role: {role}</h2>
         <h2>Reports: </h2>
           <div className='App-container'>
             <SubscriptionTable data={sampleData}/>

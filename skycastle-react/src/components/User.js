@@ -2,7 +2,7 @@ import React from 'react';
 import { createContext, useContext, useState } from 'react';
 import './App.css';
 import Home from './Home';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Button from './Button';
 
 const sampleData = [
@@ -34,9 +34,16 @@ const SubscriptionTable = ({ data }) => {
 };
 
 
-const User = () => {
-  const [name, setName] = useState("John Doe");
-  const [role, setRole] = useState("Subscriber");
+const User = (props) => {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.state);
+  let email = queryParams.get('email');
+  let name = queryParams.get('name');
+  let role = queryParams.get('role');
+  console.log(queryParams)
+
+  // const [name, setName] = useState("John Doe");
+  // const [role, setRole] = useState("Subscriber");
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
@@ -48,8 +55,9 @@ const User = () => {
     <div className="App">
       <header className="Page-header">
         <h1>User Profile:</h1>
-        <h2>Name: </h2>
-        <h2>Role: </h2>
+        <h2>Name: {name}</h2>
+        <h2>Email: {email}</h2>
+        <h2>Role: {role}</h2>
         <h2>My Reports: </h2>
         <div className='App-container'>
           <SubscriptionTable data={sampleData}/>
