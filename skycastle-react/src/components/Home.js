@@ -5,6 +5,7 @@ import Button from './Button';
 import './App.css';
 import { withRouter } from 'react-router-dom';
 import { jwtDecode } from "jwt-decode";
+import { jwtEncode } from "jwt-encode";
 import axios from 'axios';
 
 
@@ -34,6 +35,56 @@ const Home = ({ history, sendData}) => {
       console.log('User:', isUser);
       console.log('Analyst:', isAnalyst);
     };
+
+    const responseGoogleLoginJWT = async (credentialResponse) => {
+      console.log('Google Sign-In Success:', credentialResponse);
+      const decoded = jwtDecode(credentialResponse.credential);
+
+      try {
+        const response = await axios.get('http://ec2-3-144-38-237.us-east-2.compute.amazonaws.com:8012/user', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        console.log(response)
+        const result = response.data
+
+        if (result) {
+          const userWithMatchingEmail = result.find(user => user.email === decoded.email);
+          const role = userWithMatchingEmail ? userWithMatchingEmail.role : null;
+          const user_id = userWithMatchingEmail ? userWithMatchingEmail.user_id : null;
+          console.log("role: ", role)
+
+          if (role === "CLIENT")
+            navigate('/User', {
+              state: {
+                email: decoded.email,
+                name: decoded.name,
+                role: role,
+                user_id: user_id
+              }
+          })
+          
+          else if (role === "ANALYST")
+            navigate('/Analyst', {
+              state: {
+                email: decoded.email,
+                name: decoded.name,  // Include additional props
+                role: role,
+                user_id: user_id
+              }
+            })
+          }
+
+          else {
+            showAlert();
+          }
+
+      } catch (error) {
+          console.error('Error getting role:', error);
+      }
+  };
 
     const responseGoogleLogin = async (credentialResponse) => {
         console.log('Google Sign-In Success:', credentialResponse);
@@ -156,12 +207,12 @@ const Home = ({ history, sendData}) => {
             <h3>
               <label>
                 <input type="checkbox" checked={isUser} onChange={handleUserChange} />
-                  Register as Client
+                  Enroll as Client
               </label>
               <br />
               <label>
                 <input type="checkbox" checked={isAnalyst} onChange={handleAnalystChange} />
-                  Register as Analyst
+                  Enroll as Analyst
               </label>
               <br />
             </h3>

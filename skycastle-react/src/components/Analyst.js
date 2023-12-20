@@ -1,14 +1,29 @@
 import React from 'react';
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './App.css';
 import Home from './Home';
 import Button from './Button';
+import axios from 'axios';
 
 const sampleData = [
   {report_id: 'ABCD1', report_text: "Stock is up!", sub_count: 99},
   {report_id: 'ABCD2', report_text: "Stock is down!", sub_count: 1000}
 ];
+
+/*
+ {
+        "report_id": 1,
+        "title": "the first title",
+        "analyst_id": "1",
+        "content": "first report content",
+        "feedback": " first report feedback",
+        "subscribers": [
+            "2",
+            "3"
+        ]
+    },
+*/
 
 const SubscriptionTable = ({ data }) => {
   return (
@@ -16,16 +31,22 @@ const SubscriptionTable = ({ data }) => {
       <thead>
         <tr>
           <th>Report ID</th>
-          <th>Report Text</th>
-          <th>Number of Subs</th>
+          <th>Report Title</th>
+          <th>Analyst ID</th>
+          <th>Content</th>
+          <th>Feedback</th>
+          <th>List of Sub ID's</th>
         </tr>
       </thead>
       <tbody>
         {data.map((item) => (
           <tr key={item.report_id}>
             <td>{item.report_id}</td>
-            <td>{item.report_text}</td>
-            <td>{item.sub_count}</td>
+            <td>{item.title}</td>
+            <td>{item.analyst_id}</td>
+            <td>{item.content}</td>
+            <td>{item.feedback}</td>
+            <td>{item.subscribers}</td>
           </tr>
         ))}
       </tbody>
@@ -42,6 +63,29 @@ const Analyst = (props) => {
   let name = queryParams.get('name');
   let role = queryParams.get('role');
   console.log(queryParams)
+  const [realData, setRealData] = useState([])
+
+  useEffect(() =>{
+    const fetchData = async(e) => {
+      try {
+        const response = await axios.get('http://35.221.53.203:8012/reports', {
+          method: 'GET',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+        });
+
+        const result = response.data
+        console.log(result)
+        setRealData(result)
+  
+      } catch (error) {
+          console.error('Error during GET subscription/full:', error);
+      }
+    }
+    fetchData();
+  },[]);
+
 
   const handleSubmit = async () => {
       console.log("Submit Success!")
@@ -57,7 +101,7 @@ const Analyst = (props) => {
         <h2>Role: {role}</h2>
         <h2>Reports: </h2>
           <div className='App-container'>
-            <SubscriptionTable data={sampleData}/>
+            <SubscriptionTable data={realData}/>
           </div>
           <h2>Create a New Report:</h2>
           <textarea
