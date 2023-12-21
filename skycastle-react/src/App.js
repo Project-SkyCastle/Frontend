@@ -7,6 +7,8 @@ import Admin from "./components/Admin.js";
 import Home from "./components/Home";
 import User from "./components/User.js";
 import Search from "./components/Search.js";
+import SearchAll from "./components/SearchAll.js";
+
 
 
 const App = () => {
@@ -20,6 +22,7 @@ const App = () => {
               <Route path="/Analyst" element={<Analyst />} />
               <Route path="/User" element={<User />} />
               <Route path="/Search" element={<Search />} />
+              <Route path="/SearchAll" element={<SearchAll />} />
               <Route path="/Subscriptions" element={<Subscriptions />} />
             </Routes>
         </div>

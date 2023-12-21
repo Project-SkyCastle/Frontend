@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Routes, useNavigate } from "react-router-dom";
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import Button from './Button';
@@ -26,7 +26,8 @@ const Home = ({ history, sendData}) => {
     const jwt = sign(data, secret);
 
     const showAlert = () => {
-      alert('User not found. Please register as a new User or Analyst!');
+      console.log('showALERT')
+      window.alert('User not found. Please register as a new User or Analyst!');
     };
   
     const handleUserChange = () => {
@@ -44,57 +45,6 @@ const Home = ({ history, sendData}) => {
       console.log('User:', isUser);
       console.log('Analyst:', isAnalyst);
     };
-
-    const responseGoogleLoginJWT = async (credentialResponse) => {
-      console.log('Google Sign-In Success:', credentialResponse);
-      const decoded = jwtDecode(credentialResponse.credential);
-
-      try {
-        const response = await axios.get('https://nhrxd2rihl.execute-api.us-east-2.amazonaws.com/user', {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${jwt}`,
-                'Content-Type': 'application/json',
-            },
-        });
-        console.log(response)
-        const result = response.data
-
-        if (result) {
-          const userWithMatchingEmail = result.find(user => user.email === decoded.email);
-          const role = userWithMatchingEmail ? userWithMatchingEmail.role : null;
-          const user_id = userWithMatchingEmail ? userWithMatchingEmail.user_id : null;
-          console.log("role: ", role)
-
-          if (role === "CLIENT")
-            navigate('/User', {
-              state: {
-                email: decoded.email,
-                name: decoded.name,
-                role: role,
-                user_id: user_id
-              }
-          })
-          
-          else if (role === "ANALYST")
-            navigate('/Analyst', {
-              state: {
-                email: decoded.email,
-                name: decoded.name,  // Include additional props
-                role: role,
-                user_id: user_id
-              }
-            })
-          }
-
-          else {
-            showAlert();
-          }
-
-      } catch (error) {
-          console.error('Error getting role:', error);
-      }
-  };
 
     const responseGoogleLogin = async (credentialResponse) => {
         console.log('Google Sign-In Success:', credentialResponse);
@@ -117,7 +67,7 @@ const Home = ({ history, sendData}) => {
             const user_id = userWithMatchingEmail ? userWithMatchingEmail.user_id : null;
             console.log("role: ", role)
 
-            if (role === "CLIENT")
+            if (role === "CLIENT"){
               navigate('/User', {
                 state: {
                   email: decoded.email,
@@ -125,9 +75,21 @@ const Home = ({ history, sendData}) => {
                   role: role,
                   user_id: user_id
                 }
-            })
+              })
+            }
+
+            else if (role === "ADMIN"){
+              navigate('/Admin', {
+                state: {
+                  email: decoded.email,
+                  name: decoded.name,
+                  role: role,
+                  user_id: user_id
+                }
+              })
+            }
             
-            else if (role === "ANALYST")
+            else if (role === "ANALYST"){
               navigate('/Analyst', {
                 state: {
                   email: decoded.email,
@@ -141,6 +103,7 @@ const Home = ({ history, sendData}) => {
             else {
               showAlert();
             }
+          }
 
         } catch (error) {
             console.error('Error getting role:', error);

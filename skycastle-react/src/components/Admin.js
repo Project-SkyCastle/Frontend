@@ -1,14 +1,18 @@
 import React from 'react';
-import { createContext, useContext, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import './App.css';
-import Home from './Home';
-import { jwtDecode } from "jwt-decode";
-import { jwtEncode } from "jwt-encode";
 import axios from 'axios';
 
 const sampleData = [
-  {user_cnt: 100, report_cnt: 1000, sub_cnt: 1000000},,
+  {user_cnt: 100, report_cnt: 1000, sub_cnt: 1000000},
 ];
+
+
+const sampleAgg = {"MS-1-User":16,"MS-2-Report":11}
+const aggArray = Object.entries(sampleAgg);
+const keyValuePairs = aggArray.map(([key, value]) => ({ [key]: value }));
+console.log("keyValuePairs", keyValuePairs)
 
 const SubscriptionTable = ({ data }) => {
   return (
@@ -35,10 +39,43 @@ const SubscriptionTable = ({ data }) => {
   );
 };
 
+const TableExample = ({ data }) => {
+  return (
+    <div>
+      <table  className="subscription-table" >
+        <thead>
+          <tr>
+            <th>Key</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((item, index) => (
+            <tr key={index} style={{ border: '1px solid black', padding: '8px' }}>
+              {Object.entries(item).map(([key, value]) => (
+                <React.Fragment key={key}>
+                  <td>{key}</td>
+                  <td>{value}</td>
+                </React.Fragment>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
 
-const Admin = () => {
+
+
+const Admin = (props) => {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.state);
+  let email = queryParams.get('email');
+  let name = queryParams.get('name');
+  let role = queryParams.get('role');
+  let user_id = queryParams.get('user_id');
   const [realData, setRealData] = useState([])
-
   const sign = require('jwt-encode');
   const secret = 'skycastle1';
   const data = {
@@ -75,7 +112,12 @@ const Admin = () => {
   return (
     <div className="App">
       <header className="Page-header">
-        <h2>Admin View: </h2>
+        <h2>Administrator: {email}</h2>
+        <h3>Aggregator Stats:</h3>
+        <div>
+          <TableExample data={keyValuePairs} />
+        </div>
+        <h3>User List (secured resource):</h3>
           <div className='App-container'>
             <SubscriptionTable data={realData}/>
           </div>

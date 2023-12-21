@@ -11,8 +11,6 @@ const sampleData = [
   {subscription_id: 'ABCD2', sub_text: "Stock is down!", analyst: 'John Doe'},
 ];
 
-// subscription_id[DataType(=row[0], subscriber_id=row[1], analyst_id=row[2], report_id=row[3], 
-// subscription_date=row[4], feedback=row[5], notification=row[6], activity=row[7]) 
 const dummyData = [
   {
     subscription_id: 1234, 
@@ -46,6 +44,17 @@ const keys = [
   "notification",
   "activity"
 ];
+
+const keyMappings = {
+  0: 'subscription_id',
+  1: 'subscriber_id',
+  2: 'analyst_id',
+  3: 'report_id',
+  4: 'subscription_date',
+  5: 'feedback',
+  6: 'notification',
+  7: 'activity'
+};
 
 
 const SubscriptionTable = ({ data }) => {
@@ -91,23 +100,35 @@ const User = (props) => {
   let user_id = queryParams.get('user_id');
   console.log(queryParams)
   const [subs, setSubs] = useState([]);
+  const [realData, setRealData] = useState([])
   const navigate = useNavigate();
 
   useEffect(() =>{
     const fetchData = async(e) => {
       try {
-        const response = await axios.get('http://54.242.146.56:8012/subscription/full', {
+        const response = await axios.get('http://54.242.52.198:8012/subscription/full', {
           method: 'GET',
           headers: {
               'Content-Type': 'application/json',
           },
         });
 
-        const result = response.data[0][0]
-        const mappedObject = Object.fromEntries(keys.map((key, index) => [key, result[index]]));
-        console.log(mappedObject)
-        setSubs([mappedObject])
+        const result = response.data
+        const array_input = result.flatMap(innerArray => innerArray);
 
+        console.log(result)
+
+        const resultArray = array_input.map(innerArray => {
+          const resultObject = {};
+          innerArray.forEach((value, index) => {
+              const key = keyMappings[index];
+              resultObject[key] = value;
+          });
+          const filteredData = resultObject.filter(item => item.subscriber_id === user_id);
+          return filteredData;
+        });
+
+        setRealData(resultArray)
   
       } catch (error) {
           console.error('Error during GET subscription/full:', error);
@@ -130,7 +151,7 @@ const User = (props) => {
         <h2>Role: {role}</h2>
         <h2>User ID: {user_id}</h2>
         <div className='App-container'>
-          <SubscriptionTable data={subs}/>
+          <SubscriptionTable data={realData}/>
         </div>
         <div>
           <Button label="Search for More Reports" onClick={handleSubmit}></Button>

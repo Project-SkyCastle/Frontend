@@ -4,13 +4,18 @@ import './App.css';
 import Home from './Home';
 import Button from './Button';
 import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
 
-const sampleData = [
-  {subscription_id: 'ABCD1', sub_text: "Stock is up!", analyst: 'John Smith', feedback: 'Red Flag'},
-  {subscription_id: 'ABCD2', sub_text: "Stock is down!", analyst: 'John Doe', feedback: 'Green Flag'},
-  {subscription_id: 'ABCD1', sub_text: "Stock is up!", analyst: 'John Smith', feedback: 'Must see'},
-  {subscription_id: 'ABCD2', sub_text: "Stock is down!", analyst: 'John Doe', feedback: 'Ignore'},
-];
+const keyMappings = {
+  0: 'subscription_id',
+  1: 'subscriber_id',
+  2: 'analyst_id',
+  3: 'report_id',
+  4: 'subscription_date',
+  5: 'feedback',
+  6: 'notification',
+  7: 'activity'
+};
 
 const SubscriptionTable = ({ data }) => {
 
@@ -19,18 +24,26 @@ const SubscriptionTable = ({ data }) => {
       <thead>
         <tr>
           <th>Subscription ID</th>
-          <th>Content</th>
-          <th>Analyst</th>
+          <th>Subscriber ID</th>
+          <th>Analyst ID</th>
+          <th>Report ID</th>
+          <th>Subscription Date</th>
           <th>Feedback</th>
+          <th>Notification</th>
+          <th>Activity</th>
         </tr>
       </thead>
       <tbody>
         {data.map((item) => (
           <tr key={item.subscription_id}>
             <td>{item.subscription_id}</td>
-            <td>{item.sub_text}</td>
-            <td>{item.analyst}</td>
+            <td>{item.subscriber_id}</td>
+            <td>{item.analyst_id}</td>
+            <td>{item.report_id}</td>
+            <td>{item.subscription_date}</td>
             <td>{item.feedback}</td>
+            <td>{item.notification}</td>
+            <td>{item.activity}</td>
           </tr>
         ))}
       </tbody>
@@ -42,12 +55,13 @@ const SubscriptionTable = ({ data }) => {
 const Search = () => {
   const [inputValueSub, setInputValueSub] = useState('');
   const [inputValueUnSub, setInputValueUnSub] = useState('');
-  const [realData, setRealData] = useState([])
+  const [realData, setRealData] = useState([]);
+  const navigate = useNavigate;
 
   useEffect(() =>{
     const fetchData = async(e) => {
       try {
-        const response = await axios.get('http://54.242.146.56:8012/subscription?page_num=2&page_size=2', {
+        const response = await axios.get('http://54.242.52.198:8012/subscription/?page_num=2&page_size=2', {
           method: 'GET',
           headers: {
               'Content-Type': 'application/json',
@@ -55,9 +69,18 @@ const Search = () => {
         });
 
         const result = response.data
-        console.log(result)
-        const textContent = result.join(', ');
-        setRealData(textContent)
+        const array_input = result.data
+
+        const resultArray = array_input.map(innerArray => {
+          const resultObject = {};
+          innerArray.forEach((value, index) => {
+              const key = keyMappings[index];
+              resultObject[key] = value;
+          });
+          return resultObject;
+        });
+
+        setRealData(resultArray)
 
   
       } catch (error) {
@@ -74,15 +97,16 @@ const Search = () => {
   const handleUnSub = (event) => {
     setInputValueUnSub(event.target.value);
   };
-  
+
   const handleSubmit = async () => {
-    console.log('handleSumbit id here')
-  };
+    console.log("Submit Success!")
+};
+  
 
   return (
     <div className="App">
       <header className="Page-header">
-        <h2>Search Reports: </h2>
+        <h2>Search Reports w/ Pagination: </h2>
         <div>
           <input 
             className='labelarea'
@@ -105,13 +129,14 @@ const Search = () => {
               <Button label="Unsubscribe" onClick={handleSubmit}></Button>
           </div>
         </div>
-            <div className='App-container'>
-              <SubscriptionTable data={sampleData}/>
-            </div>
-            <h2>Raw Pagination: </h2>
-            <div>
-              <p>{realData}</p>
-            </div>
+        <div className='App-container'>
+          <SubscriptionTable data={realData}/>
+        </div>
+        <div>
+          <Link to="/SearchAll">
+            <Button label="View All Search Results"></Button>          
+          </Link>
+        </div>
       </header>
     </div>
   );
