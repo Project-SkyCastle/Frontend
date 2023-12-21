@@ -160,7 +160,7 @@ const Home = ({ history, sendData}) => {
       console.log(sign_up_role)
 
       try {
-        const response = await axios.post('https://nhrxd2rihl.execute-api.us-east-2.amazonaws.com/user', {
+        const response = await axios.post('http://ec2-3-144-38-237.us-east-2.compute.amazonaws.com:8012/user', {
               "email": decoded.email,
               "role": sign_up_role
         });
