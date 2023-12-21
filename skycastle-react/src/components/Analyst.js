@@ -62,6 +62,7 @@ const Analyst = (props) => {
   let email = queryParams.get('email');
   let name = queryParams.get('name');
   let role = queryParams.get('role');
+  let user_id = queryParams.get('user_id');
   console.log(queryParams)
   const [realData, setRealData] = useState([])
 
@@ -99,13 +100,14 @@ const Analyst = (props) => {
         <h2>Name: {name}</h2>
         <h2>Email: {email}</h2>
         <h2>Role: {role}</h2>
+        <h2>Analyst ID: {user_id}</h2>
         <h2>Reports: </h2>
           <div className='App-container'>
             <SubscriptionTable data={realData}/>
           </div>
           <h2>Create a New Report:</h2>
           <textarea
-            placeholder="Write Report Here"
+            placeholder=" Write New Report Here! {analyst_id: (), content: (), feedback: ()}"
             rows={10} 
           />
           <div>

@@ -1,8 +1,9 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
 import Home from './Home';
 import Button from './Button';
+import axios from 'axios';
 
 const sampleData = [
   {subscription_id: 'ABCD1', sub_text: "Stock is up!", analyst: 'John Smith', feedback: 'Red Flag'},
@@ -41,6 +42,30 @@ const SubscriptionTable = ({ data }) => {
 const Search = () => {
   const [inputValueSub, setInputValueSub] = useState('');
   const [inputValueUnSub, setInputValueUnSub] = useState('');
+  const [realData, setRealData] = useState([])
+
+  useEffect(() =>{
+    const fetchData = async(e) => {
+      try {
+        const response = await axios.get('http://54.242.146.56:8012/subscription?page_num=2&page_size=2', {
+          method: 'GET',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+        });
+
+        const result = response.data
+        console.log(result)
+        const textContent = result.join(', ');
+        setRealData(textContent)
+
+  
+      } catch (error) {
+          console.error('Error during GET subscription/full:', error);
+      }
+    }
+    fetchData();
+  },[]);
 
   const handleSub = (event) => {
     setInputValueSub(event.target.value);
@@ -82,6 +107,10 @@ const Search = () => {
         </div>
             <div className='App-container'>
               <SubscriptionTable data={sampleData}/>
+            </div>
+            <h2>Raw Pagination: </h2>
+            <div>
+              <p>{realData}</p>
             </div>
       </header>
     </div>
