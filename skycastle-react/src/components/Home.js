@@ -16,6 +16,15 @@ const Home = ({ history, sendData}) => {
     const [isUser, setIsUser] = useState(true);
     const [isAnalyst, setIsAnalyst] = useState(false);
 
+    const sign = require('jwt-encode');
+    const secret = 'skycastle1';
+    const data = {
+      sub: '1234',
+      name: 'John Doe',
+      iat: 1516239022
+    };
+    const jwt = sign(data, secret);
+
     const showAlert = () => {
       alert('User not found. Please register as a new User or Analyst!');
     };
@@ -41,9 +50,10 @@ const Home = ({ history, sendData}) => {
       const decoded = jwtDecode(credentialResponse.credential);
 
       try {
-        const response = await axios.get('http://ec2-3-144-38-237.us-east-2.compute.amazonaws.com:8012/user', {
+        const response = await axios.get('https://nhrxd2rihl.execute-api.us-east-2.amazonaws.com/user', {
             method: 'GET',
             headers: {
+              'Authorization': `Bearer ${jwt}`,
                 'Content-Type': 'application/json',
             },
         });
