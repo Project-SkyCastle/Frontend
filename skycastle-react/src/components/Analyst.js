@@ -101,7 +101,7 @@ const Analyst = (props) => {
         <h2>Email: {email}</h2>
         <h2>Role: {role}</h2>
         <h2>Analyst ID: {user_id}</h2>
-        <h2>Reports: </h2>
+        <h2>All Reports: </h2>
           <div className='App-container'>
             <SubscriptionTable data={realData}/>
           </div>

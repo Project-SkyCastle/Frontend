@@ -63,7 +63,7 @@ const SubscriptionTable = ({ data }) => {
       <thead>
         <tr>
           <th>Subscription ID</th>
-          <th>Subscriber ID</th>
+          <th>User ID</th>
           <th>Analyst ID</th>
           <th>Report ID</th>
           <th>Subscription Date</th>
@@ -106,7 +106,7 @@ const User = (props) => {
   useEffect(() =>{
     const fetchData = async(e) => {
       try {
-        const response = await axios.get('http://54.242.52.198:8012/subscription/full', {
+        const response = await axios.get('http://54.235.43.83:8012/subscription/full', {
           method: 'GET',
           headers: {
               'Content-Type': 'application/json',
@@ -116,19 +116,19 @@ const User = (props) => {
         const result = response.data
         const array_input = result.flatMap(innerArray => innerArray);
 
-        console.log(result)
-
         const resultArray = array_input.map(innerArray => {
           const resultObject = {};
           innerArray.forEach((value, index) => {
               const key = keyMappings[index];
               resultObject[key] = value;
           });
-          const filteredData = resultObject.filter(item => item.subscriber_id === user_id);
-          return filteredData;
+          return resultObject
         });
 
-        setRealData(resultArray)
+        console.log("resultArray", resultArray)
+        const filteredData = resultArray.filter(item => item.subscriber_id === 40);
+
+        setRealData(filteredData)
   
       } catch (error) {
           console.error('Error during GET subscription/full:', error);

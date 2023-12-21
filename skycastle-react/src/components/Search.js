@@ -61,7 +61,7 @@ const Search = () => {
   useEffect(() =>{
     const fetchData = async(e) => {
       try {
-        const response = await axios.get('http://54.242.52.198:8012/subscription/?page_num=2&page_size=2', {
+        const response = await axios.get('http://54.235.43.83:8012/subscription/?page_num=2&page_size=2', {
           method: 'GET',
           headers: {
               'Content-Type': 'application/json',
@@ -107,6 +107,14 @@ const Search = () => {
     <div className="App">
       <header className="Page-header">
         <h2>Search Reports w/ Pagination: </h2>
+        <div className='App-container'>
+          <SubscriptionTable data={realData}/>
+        </div>
+        <div>
+          <Link to="/SearchAll">
+            <Button label="View All Search Results"></Button>          
+          </Link>
+        </div>
         <div>
           <input 
             className='labelarea'
@@ -128,14 +136,6 @@ const Search = () => {
           <div>
               <Button label="Unsubscribe" onClick={handleSubmit}></Button>
           </div>
-        </div>
-        <div className='App-container'>
-          <SubscriptionTable data={realData}/>
-        </div>
-        <div>
-          <Link to="/SearchAll">
-            <Button label="View All Search Results"></Button>          
-          </Link>
         </div>
       </header>
     </div>

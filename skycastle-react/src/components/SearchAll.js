@@ -59,7 +59,7 @@ const SearchAll = () => {
   useEffect(() =>{
     const fetchData = async(e) => {
       try {
-        const response = await axios.get('http://54.242.52.198:8012/subscription/full', {
+        const response = await axios.get('http://54.235.43.83:8012/subscription/full', {
           method: 'GET',
           headers: {
               'Content-Type': 'application/json',
@@ -106,6 +106,9 @@ const SearchAll = () => {
     <div className="App">
       <header className="Page-header">
         <h2>Search All Reports: </h2>
+            <div className='App-container'>
+                <SubscriptionTable data={realData}/>
+            </div>
         <div>
           <input 
             className='labelarea'
@@ -128,9 +131,6 @@ const SearchAll = () => {
               <Button label="Unsubscribe" onClick={handleSubmit}></Button>
           </div>
         </div>
-            <div className='App-container'>
-              <SubscriptionTable data={realData}/>
-            </div>
       </header>
     </div>
   );

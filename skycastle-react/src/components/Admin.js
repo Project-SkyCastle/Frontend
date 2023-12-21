@@ -9,7 +9,7 @@ const sampleData = [
 ];
 
 
-const sampleAgg = {"MS-1-User":16,"MS-2-Report":11}
+const sampleAgg = {"MS-1-User":16,"MS-2-Report":11, "MS-3-Subscription": 57}
 const aggArray = Object.entries(sampleAgg);
 const keyValuePairs = aggArray.map(([key, value]) => ({ [key]: value }));
 console.log("keyValuePairs", keyValuePairs)
@@ -39,25 +39,23 @@ const SubscriptionTable = ({ data }) => {
   );
 };
 
-const TableExample = ({ data }) => {
+const AggTable = ({ data }) => {
+  const tableData = Object.entries(data);
+
   return (
     <div>
-      <table  className="subscription-table" >
+      <table className="subscription-table" >
         <thead>
           <tr>
-            <th>Key</th>
-            <th>Value</th>
+            <th>Microservice Key</th>
+            <th>Count Value</th>
           </tr>
         </thead>
         <tbody>
-          {data.map((item, index) => (
-            <tr key={index} style={{ border: '1px solid black', padding: '8px' }}>
-              {Object.entries(item).map(([key, value]) => (
-                <React.Fragment key={key}>
-                  <td>{key}</td>
-                  <td>{value}</td>
-                </React.Fragment>
-              ))}
+          {tableData.map(([key, value]) => (
+            <tr key={key} >
+              <td >{key}</td>
+              <td >{value}</td>
             </tr>
           ))}
         </tbody>
@@ -65,8 +63,6 @@ const TableExample = ({ data }) => {
     </div>
   );
 };
-
-
 
 const Admin = (props) => {
   const location = useLocation();
@@ -76,6 +72,7 @@ const Admin = (props) => {
   let role = queryParams.get('role');
   let user_id = queryParams.get('user_id');
   const [realData, setRealData] = useState([])
+  const [aggData, setAggData] = useState([])
   const sign = require('jwt-encode');
   const secret = 'skycastle1';
   const data = {
@@ -88,7 +85,6 @@ const Admin = (props) => {
   useEffect(() =>{
     const fetchData = async(e) => {
       try {
-        // const response = await axios.get('http://ec2-3-144-38-237.us-east-2.compute.amazonaws.com:8012/user', {
         const response = await axios.get('https://nhrxd2rihl.execute-api.us-east-2.amazonaws.com/user', {
           method: 'GET',
           headers: {
@@ -98,7 +94,7 @@ const Admin = (props) => {
         });
 
         const result = response.data
-        console.log(result)
+        console.log("SubscriptionTable",result)
         setRealData(result)
 
   
@@ -109,13 +105,35 @@ const Admin = (props) => {
     fetchData();
   },[]);
 
+  useEffect(() =>{
+    const fetchAgg = async(e) => {
+      try {
+        const response = await axios.get('http://ec2-13-211-38-75.ap-southeast-2.compute.amazonaws.com:8012/show_stat', {
+          method: 'GET',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+        });
+
+        const result = response.data
+        console.log("Agg Results",result)
+        setAggData(result)
+
+      } catch (error) {
+          console.error('Error during GET show_stata:', error);
+      }
+    }
+    fetchAgg();
+  },[]);
+
+
   return (
     <div className="App">
       <header className="Page-header">
         <h2>Administrator: {email}</h2>
         <h3>Aggregator Stats:</h3>
         <div>
-          <TableExample data={keyValuePairs} />
+          <AggTable data={aggData} />
         </div>
         <h3>User List (secured resource):</h3>
           <div className='App-container'>
