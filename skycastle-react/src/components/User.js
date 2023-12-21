@@ -126,7 +126,8 @@ const User = (props) => {
         });
 
         console.log("resultArray", resultArray)
-        const filteredData = resultArray.filter(item => item.subscriber_id === 40);
+        const int_user_id = parseInt(user_id, 10);
+        const filteredData = resultArray.filter(item => item.subscriber_id === int_user_id);
 
         setRealData(filteredData)
   
