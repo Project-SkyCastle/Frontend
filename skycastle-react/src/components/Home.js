@@ -6,6 +6,7 @@ import './App.css';
 import { withRouter } from 'react-router-dom';
 import { jwtDecode } from "jwt-decode";
 import { jwtEncode } from "jwt-encode";
+import skyImg from './skycastle_art.png';
 import axios from 'axios';
 
 
@@ -167,6 +168,8 @@ const Home = ({ history, sendData}) => {
         <div className="App">
             <header className="App-header">
             <h1>Welcome to Skycastle!</h1>
+            <img src={skyImg} alt="Skycastle Image" />
+            <h2>Login to Continue: </h2>
             <GoogleLogin
                 onSuccess={responseGoogleLogin}
                 shape="circle"
